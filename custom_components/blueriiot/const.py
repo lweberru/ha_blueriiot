@@ -1,0 +1,25 @@
+"""Constants for the BlueRiiot Bluetooth integration."""
+
+from datetime import timedelta
+
+DOMAIN = "blueriiot"
+PLATFORMS: list[str] = ["binary_sensor", "button", "sensor"]
+
+CONF_ADDRESS = "address"
+CONF_SCAN_MODE = "scan_mode"
+DEFAULT_SCAN_MODE = "passive"
+CONF_UPDATE_INTERVAL = "update_interval"
+DEFAULT_UPDATE_INTERVAL = 15
+MIN_UPDATE_INTERVAL = 5
+MAX_UPDATE_INTERVAL = 120
+DEFAULT_UPDATE_INTERVAL_DELTA = timedelta(minutes=DEFAULT_UPDATE_INTERVAL)
+CONF_SALT_DIVISOR = "salt_divisor"
+CONF_SALT_REFERENCE = "salt_reference"
+DEFAULT_SALT_DIVISOR = 18.0
+
+MANUFACTURER = "BlueRiiot"
+MODEL = "Blue Connect"
+
+SERVICE_UUID = "F3300001-F0A2-9B06-0C59-1BC4763B5C00"
+COMMAND_CHARACTERISTIC_UUID = "F3300002-F0A2-9B06-0C59-1BC4763B5C00"
+NOTIFY_CHARACTERISTIC_UUID = "F3300003-F0A2-9B06-0C59-1BC4763B5C00"

@@ -1,0 +1,58 @@
+{
+  "title": "BlueRiiot Bluetooth",
+  "config": {
+    "flow_title": "BlueRiiot: {name}",
+    "step": {
+      "user": {
+        "title": "BlueRiiot einrichten",
+        "description": "Wahle einen gefundenen BlueRiiot oder gib seine Bluetooth-Adresse ein."
+      },
+      "bluetooth_confirm": {
+        "title": "BlueRiiot gefunden",
+        "description": "Mochtest du diesen BlueRiiot einrichten?"
+      }
+    },
+    "error": {
+      "invalid_address": "Die Bluetooth-Adresse ist ungultig."
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "BlueRiiot Optionen",
+        "data": {
+          "update_interval": "Abfrageintervall",
+          "salt_reference": "Salz-Referenzwert zur Kalibrierung"
+        },
+        "data_description": {
+          "salt_reference": "Optional: Den mit einer Referenzmessung bestimmten Salzgehalt eingeben. Die Integration berechnet daraus mit dem letzten Rohwert automatisch den passenden Kalibrierfaktor. Bei 0 bleibt die Kalibrierung unverandert."
+        }
+      }
+    },
+    "error": {
+      "no_salt_measurement": "Es liegt keine verwertbare Salzmessung vor. Zuerst eine aktuelle Messung abwarten."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {"name": "Wassertemperatur"},
+      "ph": {"name": "pH-Wert"},
+      "orp": {"name": "Redoxpotential"},
+      "salt": {"name": "Salzgehalt"},
+      "conductivity": {"name": "Leitfahigkeit"},
+      "battery": {"name": "Batterie"},
+      "last_success": {"name": "Letzte erfolgreiche Messung"},
+      "last_error": {"name": "Letzter Lesefehler"},
+      "rssi": {"name": "Bluetooth-Signalstarke"}
+    },
+    "binary_sensor": {
+      "connected": {"name": "Direkt erreichbar"}
+    },
+    "button": {
+      "refresh": {"name": "Jetzt messen"}
+    }
+  }
+}

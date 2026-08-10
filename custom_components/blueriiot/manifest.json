@@ -1,0 +1,18 @@
+{
+  "domain": "blueriiot",
+  "name": "BlueRiiot Bluetooth",
+  "codeowners": ["@lweberru"],
+  "config_flow": true,
+  "dependencies": ["bluetooth"],
+  "documentation": "https://github.com/lweberru/ha_blueriiot",
+  "issue_tracker": "https://github.com/lweberru/ha_blueriiot/issues",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "version": "1.0.0",
+  "bluetooth": [
+    {
+      "service_uuid": "f3300001-f0a2-9b06-0c59-1bc4763b5c00",
+      "connectable": true
+    }
+  ]
+}

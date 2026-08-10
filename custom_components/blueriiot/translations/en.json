@@ -1,0 +1,58 @@
+{
+  "title": "BlueRiiot Bluetooth",
+  "config": {
+    "flow_title": "BlueRiiot: {name}",
+    "step": {
+      "user": {
+        "title": "Set up BlueRiiot",
+        "description": "Choose a discovered BlueRiiot or enter its Bluetooth address."
+      },
+      "bluetooth_confirm": {
+        "title": "BlueRiiot discovered",
+        "description": "Do you want to set up this BlueRiiot?"
+      }
+    },
+    "error": {
+      "invalid_address": "The Bluetooth address is invalid."
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "BlueRiiot options",
+        "data": {
+          "update_interval": "Polling interval",
+          "salt_reference": "Salt reference value for calibration"
+        },
+        "data_description": {
+          "salt_reference": "Optional: Enter a salt concentration measured by a reference test. The integration derives the calibration factor from the latest raw reading. Enter 0 to keep the current calibration."
+        }
+      }
+    },
+    "error": {
+      "no_salt_measurement": "No usable salt measurement is available. Wait for a current reading first."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {"name": "Water temperature"},
+      "ph": {"name": "pH"},
+      "orp": {"name": "Oxidation reduction potential"},
+      "salt": {"name": "Salt concentration"},
+      "conductivity": {"name": "Conductivity"},
+      "battery": {"name": "Battery"},
+      "last_success": {"name": "Last successful reading"},
+      "last_error": {"name": "Last read error"},
+      "rssi": {"name": "Bluetooth signal strength"}
+    },
+    "binary_sensor": {
+      "connected": {"name": "Directly reachable"}
+    },
+    "button": {
+      "refresh": {"name": "Measure now"}
+    }
+  }
+}
