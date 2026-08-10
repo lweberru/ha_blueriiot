@@ -54,6 +54,8 @@ logger:
     custom_components.blueriiot: debug
 ```
 
+Danach Home Assistant neu starten und **BlueRiiot Bluetooth** unter **Integration hinzufugen** offnen. Im Home-Assistant-Log erscheinen die vom Bluetooth-Scanner bekannten Geraete mit Name, Adresse, Service-UUIDs und Herstellerdaten. Die Adresse kann vor dem Teilen eines Logs geschwarzt werden.
+
 ## Entwicklung
 
 Die Decoder-Tests kommen ohne Home-Assistant-Installation aus:

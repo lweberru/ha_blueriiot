@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import voluptuous as vol
@@ -27,6 +28,7 @@ from .const import (
 
 CONF_UPDATE_INTERVAL = "update_interval"
 _DISCOVERY_NAME_PREFIXES = ("blue connect", "blueriiot")
+_LOGGER = logging.getLogger(__name__)
 
 
 def _is_blueriiot_device(service_info: BluetoothServiceInfoBleak) -> bool:
@@ -45,6 +47,17 @@ def _discovered_devices(hass) -> list[selector.SelectOptionDict]:
     """Return BlueRiiot devices known to Home Assistant Bluetooth."""
     devices: dict[str, selector.SelectOptionDict] = {}
     for service_info in bluetooth.async_discovered_service_info(hass, connectable=True):
+        _LOGGER.debug(
+            "Bluetooth discovery cache: name=%r address=%s service_uuids=%s "
+            "manufacturer_data=%s",
+            service_info.name,
+            format_mac(service_info.address),
+            sorted(str(uuid) for uuid in (service_info.service_uuids or [])),
+            {
+                manufacturer_id: data.hex()
+                for manufacturer_id, data in service_info.manufacturer_data.items()
+            },
+        )
         if not _is_blueriiot_device(service_info):
             continue
         address = format_mac(service_info.address)
