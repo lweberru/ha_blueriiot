@@ -51,7 +51,7 @@ class BlueRiiotCoordinator(DataUpdateCoordinator[BlueRiiotData]):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.config_entry = entry
-        self.address = format_mac(entry.data[CONF_ADDRESS])
+        self.address = format_mac(entry.data[CONF_ADDRESS]).upper()
         interval = timedelta(
             minutes=int(entry.options.get(CONF_UPDATE_INTERVAL, 15))
         )

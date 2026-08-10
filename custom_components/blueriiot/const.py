@@ -6,6 +6,7 @@ DOMAIN = "blueriiot"
 PLATFORMS: list[str] = ["binary_sensor", "button", "sensor"]
 
 CONF_ADDRESS = "address"
+CONF_DEVICE_NAME = "device_name"
 CONF_SCAN_MODE = "scan_mode"
 DEFAULT_SCAN_MODE = "passive"
 CONF_UPDATE_INTERVAL = "update_interval"

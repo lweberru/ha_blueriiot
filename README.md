@@ -40,6 +40,8 @@ Jedes eingerichtete Gerat wird als eigenes Home-Assistant-Gerateobjekt angelegt.
 
 Das Abfrageintervall kann in den Optionen der Integration zwischen 5 und 120 Minuten eingestellt werden. Die Schaltflache **Jetzt messen** lost eine sofortige GATT-Abfrage aus.
 
+Die Optionen erreichst du nach dem Einrichten in **Einstellungen > Gerate & Dienste > BlueRiiot Bluetooth > Konfigurieren**. Dort lassen sich das Abfrageintervall und bei Salzmodellen der Referenzwert zur Kalibrierung setzen.
+
 Bei BlueRiiot-Modellen mit Salzsensor ist der Standard-Kalibrierfaktor `18`. Fur eine Kalibrierung zuerst eine aktuelle Messung auslosen und dann unter den Integrationsoptionen den Salzgehalt einer verlasslichen Referenzmessung eingeben. Die Integration berechnet den Faktor einmalig aus dem aktuellen Rohwert; mit `0` bleibt er unverandert.
 
 ## Fehlerdiagnose

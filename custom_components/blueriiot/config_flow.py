@@ -11,6 +11,7 @@ from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import BluetoothServiceInfoBleak
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_ADDRESS
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 from homeassistant.helpers.device_registry import format_mac
@@ -18,6 +19,7 @@ from homeassistant.helpers.device_registry import format_mac
 from .const import (
     CONF_SALT_DIVISOR,
     CONF_SALT_REFERENCE,
+    CONF_DEVICE_NAME,
     DEFAULT_SALT_DIVISOR,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
@@ -80,6 +82,17 @@ def _address_schema(hass) -> vol.Schema:
     )
 
 
+def _normalized_address(address: str) -> str:
+    """Return the Bluetooth address in Home Assistant cache format."""
+    return format_mac(address).upper()
+
+
+def _entry_title(name: str | None, address: str) -> str:
+    """Build a recognizable product name from BLE advertisement data."""
+    suffix = address.replace(":", "")[-6:]
+    return f"Blue Connect {name}" if name else f"Blue Connect {suffix}"
+
+
 def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
     """Build the polling options schema."""
     return vol.Schema(
@@ -114,16 +127,22 @@ class BlueRiiotConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry) -> BlueRiiotOptionsFlow:
+        """Return the options flow for an existing BlueRiiot entry."""
+        return BlueRiiotOptionsFlow()
+
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfoBleak
     ) -> FlowResult:
         """Handle a device found by Home Assistant Bluetooth."""
-        address = format_mac(discovery_info.address)
+        address = _normalized_address(discovery_info.address)
         await self.async_set_unique_id(address)
         self._abort_if_unique_id_configured()
         self._discovery_info = discovery_info
         self.context["title_placeholders"] = {
-            "name": discovery_info.name or "BlueRiiot"
+            "name": _entry_title(discovery_info.name, address)
         }
         return await self.async_step_bluetooth_confirm()
 
@@ -132,10 +151,13 @@ class BlueRiiotConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Confirm setup of a discovered BlueRiiot."""
         if user_input is not None:
-            address = format_mac(self._discovery_info.address)
+            address = _normalized_address(self._discovery_info.address)
             return self.async_create_entry(
-                title=self._discovery_info.name or f"BlueRiiot {address}",
-                data={CONF_ADDRESS: address},
+                title=_entry_title(self._discovery_info.name, address),
+                data={
+                    CONF_ADDRESS: address,
+                    CONF_DEVICE_NAME: self._discovery_info.name or "",
+                },
                 options={CONF_UPDATE_INTERVAL: DEFAULT_UPDATE_INTERVAL},
             )
         return self.async_show_form(step_id="bluetooth_confirm")
@@ -147,14 +169,14 @@ class BlueRiiotConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                address = format_mac(user_input[CONF_ADDRESS])
+                address = _normalized_address(user_input[CONF_ADDRESS])
             except ValueError:
                 errors["base"] = "invalid_address"
             else:
                 await self.async_set_unique_id(address)
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
-                    title=f"BlueRiiot {address}",
+                    title=_entry_title(None, address),
                     data={CONF_ADDRESS: address},
                     options={CONF_UPDATE_INTERVAL: DEFAULT_UPDATE_INTERVAL},
                 )

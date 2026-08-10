@@ -1,7 +1,7 @@
 {
   "title": "BlueRiiot Bluetooth",
   "config": {
-    "flow_title": "BlueRiiot: {name}",
+    "flow_title": "{name}",
     "step": {
       "user": {
         "title": "BlueRiiot einrichten",
