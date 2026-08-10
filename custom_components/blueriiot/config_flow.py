@@ -26,17 +26,26 @@ from .const import (
 )
 
 CONF_UPDATE_INTERVAL = "update_interval"
+_DISCOVERY_NAME_PREFIXES = ("blue connect", "blueriiot")
+
+
+def _is_blueriiot_device(service_info: BluetoothServiceInfoBleak) -> bool:
+    """Return whether advertisement data identifies a BlueRiiot device."""
+    service_uuids = {
+        str(service_uuid).lower()
+        for service_uuid in (service_info.service_uuids or [])
+    }
+    name = (service_info.name or "").lower()
+    return SERVICE_UUID.lower() in service_uuids or name.startswith(
+        _DISCOVERY_NAME_PREFIXES
+    )
 
 
 def _discovered_devices(hass) -> list[selector.SelectOptionDict]:
     """Return BlueRiiot devices known to Home Assistant Bluetooth."""
     devices: dict[str, selector.SelectOptionDict] = {}
     for service_info in bluetooth.async_discovered_service_info(hass, connectable=True):
-        service_uuids = {
-            str(service_uuid).lower()
-            for service_uuid in (service_info.service_uuids or [])
-        }
-        if SERVICE_UUID.lower() not in service_uuids:
+        if not _is_blueriiot_device(service_info):
             continue
         address = format_mac(service_info.address)
         name = service_info.name or "BlueRiiot"

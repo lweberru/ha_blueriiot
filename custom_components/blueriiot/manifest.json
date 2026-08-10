@@ -8,10 +8,18 @@
   "issue_tracker": "https://github.com/lweberru/ha_blueriiot/issues",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bluetooth": [
     {
       "service_uuid": "f3300001-f0a2-9b06-0c59-1bc4763b5c00",
+      "connectable": true
+    },
+    {
+      "local_name": "Blue Connect*",
+      "connectable": true
+    },
+    {
+      "local_name": "BlueRiiot*",
       "connectable": true
     }
   ]
