@@ -18,7 +18,7 @@ Home Assistant wahlt automatisch den erreichbaren Adapter oder Proxy. Der Proxy 
 4. **BlueRiiot Bluetooth** installieren und Home Assistant neu starten.
 5. Unter **Einstellungen > Gerate & Dienste > Integration hinzufugen** nach **BlueRiiot Bluetooth** suchen.
 
-Wird ein passendes Gerat per Bluetooth erkannt, zeigt Home Assistant automatisch einen Einrichtungsdialog. Die Erkennung nutzt den beworbenen Namen (`Blue Connect*` oder `BlueRiiot*`) und, falls vorhanden, die proprietare GATT-Service-UUID. Alternativ konnen erkannte Gerate im Dialog ausgewahlt oder ihre Bluetooth-Adresse manuell eingetragen werden.
+Wird ein passendes Gerat per Bluetooth erkannt, zeigt Home Assistant automatisch einen Einrichtungsdialog. Die Erkennung nutzt den beworbenen Namen (`Blue Connect*` oder `BlueRiiot*`), die proprietare GATT-Service-UUID oder das BlueRiiot-Herstellerdaten-Advertisement. Alternativ konnen erkannte Gerate im Dialog ausgewahlt oder ihre Bluetooth-Adresse manuell eingetragen werden.
 
 ## Bereitgestellte Entities
 
@@ -54,7 +54,7 @@ logger:
     custom_components.blueriiot: debug
 ```
 
-Danach Home Assistant neu starten und **BlueRiiot Bluetooth** unter **Integration hinzufugen** offnen. Im Home-Assistant-Log erscheinen die vom Bluetooth-Scanner bekannten Geraete mit Name, Adresse, Service-UUIDs und Herstellerdaten. Die Adresse kann vor dem Teilen eines Logs geschwarzt werden.
+Danach Home Assistant neu starten und **BlueRiiot Bluetooth** unter **Integration hinzufugen** offnen. Im Home-Assistant-Log erscheinen erkannte BlueRiiot-Geraete mit Name und Adresse. Die Adresse kann vor dem Teilen eines Logs geschwarzt werden.
 
 ## Entwicklung
 

@@ -28,6 +28,8 @@ from .const import (
 
 CONF_UPDATE_INTERVAL = "update_interval"
 _DISCOVERY_NAME_PREFIXES = ("blue connect", "blueriiot")
+_MANUFACTURER_ID = 305
+_MANUFACTURER_DATA_PREFIX = bytes([0x19, 0x01])
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -38,8 +40,11 @@ def _is_blueriiot_device(service_info: BluetoothServiceInfoBleak) -> bool:
         for service_uuid in (service_info.service_uuids or [])
     }
     name = (service_info.name or "").lower()
-    return SERVICE_UUID.lower() in service_uuids or name.startswith(
-        _DISCOVERY_NAME_PREFIXES
+    manufacturer_data = service_info.manufacturer_data.get(_MANUFACTURER_ID, b"")
+    return (
+        SERVICE_UUID.lower() in service_uuids
+        or name.startswith(_DISCOVERY_NAME_PREFIXES)
+        or manufacturer_data.startswith(_MANUFACTURER_DATA_PREFIX)
     )
 
 
@@ -47,19 +52,13 @@ def _discovered_devices(hass) -> list[selector.SelectOptionDict]:
     """Return BlueRiiot devices known to Home Assistant Bluetooth."""
     devices: dict[str, selector.SelectOptionDict] = {}
     for service_info in bluetooth.async_discovered_service_info(hass, connectable=True):
-        _LOGGER.debug(
-            "Bluetooth discovery cache: name=%r address=%s service_uuids=%s "
-            "manufacturer_data=%s",
-            service_info.name,
-            format_mac(service_info.address),
-            sorted(str(uuid) for uuid in (service_info.service_uuids or [])),
-            {
-                manufacturer_id: data.hex()
-                for manufacturer_id, data in service_info.manufacturer_data.items()
-            },
-        )
         if not _is_blueriiot_device(service_info):
             continue
+        _LOGGER.debug(
+            "Discovered BlueRiiot advertisement: name=%r address=%s",
+            service_info.name,
+            format_mac(service_info.address),
+        )
         address = format_mac(service_info.address)
         name = service_info.name or "BlueRiiot"
         devices[address] = {"value": address, "label": f"{name} ({address})"}
