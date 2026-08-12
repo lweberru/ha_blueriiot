@@ -1,54 +1,56 @@
 # BlueRiiot Bluetooth for Home Assistant
 
-Eine vollstandig lokale Home-Assistant-Integration fur BlueRiiot-Gerate. Sie liest die Messwerte direkt per Bluetooth Low Energy (BLE), ohne Cloud-Zugang und ohne Abhangigkeit von anderen benutzerdefinierten Integrationen.
+[Deutsch](README.de.md)
 
-## Voraussetzungen
+A fully local Home Assistant integration for BlueRiiot devices. It reads measurements directly over Bluetooth Low Energy (BLE), without cloud access or dependencies on other custom integrations.
 
-- Home Assistant `2026.8.1` oder neuer
-- Ein BlueRiiot-Gerat in Reichweite
-- Ein Bluetooth-Adapter in Home Assistant oder ein unterstutzter Bluetooth Proxy
+## Requirements
 
-Home Assistant wahlt automatisch den erreichbaren Adapter oder Proxy. Der Proxy muss die Verbindung zu BLE-Geraten unterstutzen; reine Advertisement-Scanner reichen nicht aus.
+- A current Home Assistant release with the built-in Bluetooth integration enabled
+- A BlueRiiot device within Bluetooth range
+- A Bluetooth adapter connected to Home Assistant or a supported Bluetooth proxy that can make BLE connections
 
-## Installation mit HACS
+The integration does not require Home Assistant `2026.8.1`; that version was only used during development. It has been tested with Home Assistant `2026.8.1`. Home Assistant automatically chooses a reachable adapter or proxy. Advertisement-only scanners cannot read measurements because the integration needs to open a GATT connection.
 
-1. In HACS **Integrationen** offnen.
-2. Uber das Drei-Punkte-Menu **Benutzerdefiniertes Repository** wahlen.
-3. `https://github.com/lweberru/ha_blueriiot` mit Kategorie **Integration** eintragen.
-4. **BlueRiiot Bluetooth** installieren und Home Assistant neu starten.
-5. Unter **Einstellungen > Gerate & Dienste > Integration hinzufugen** nach **BlueRiiot Bluetooth** suchen.
+## HACS Installation
 
-Wird ein passendes Gerat per Bluetooth erkannt, zeigt Home Assistant automatisch einen Einrichtungsdialog. Die Erkennung nutzt den beworbenen Namen (`Blue Connect*` oder `BlueRiiot*`), die proprietare GATT-Service-UUID oder das BlueRiiot-Herstellerdaten-Advertisement. Alternativ konnen erkannte Gerate im Dialog ausgewahlt oder ihre Bluetooth-Adresse manuell eingetragen werden.
+1. Open **Integrations** in HACS.
+2. Select **Custom repositories** from the three-dot menu.
+3. Add `https://github.com/lweberru/ha_blueriiot` as an **Integration** repository.
+4. Install **BlueRiiot Bluetooth** and restart Home Assistant.
+5. Go to **Settings > Devices & services > Add integration** and search for **BlueRiiot Bluetooth**.
 
-## Bereitgestellte Entities
+When a matching device is discovered, Home Assistant shows a setup dialog automatically. Discovery uses the advertised name (`Blue Connect*` or `BlueRiiot*`), the proprietary GATT service UUID, or the BlueRiiot manufacturer-data advertisement. Discovered devices can also be selected from the manual setup dialog.
 
-Jedes eingerichtete Gerat wird als eigenes Home-Assistant-Gerateobjekt angelegt.
+## Entities
 
-| Entity | Kategorie |
+Each configured device is added as a separate Home Assistant device.
+
+| Entity | Category |
 | --- | --- |
-| Wassertemperatur | Messwert |
-| pH-Wert | Messwert |
-| Redoxpotential | Messwert |
-| Salzgehalt | Messwert, wenn das Gerat einen Salzwert meldet |
-| Leitfahigkeit | Messwert |
-| Batterie | Diagnose |
-| Direkt erreichbar | Diagnose |
-| Bluetooth-Signalstarke | Diagnose |
-| Letzte erfolgreiche Messung | Diagnose |
-| Letzter Lesefehler | Diagnose |
-| Jetzt messen | Diagnose-Schaltflache |
+| Water temperature | Measurement |
+| pH | Measurement |
+| Oxidation reduction potential | Measurement |
+| Salt concentration | Measurement, when reported by the device |
+| Conductivity | Measurement |
+| Battery | Diagnostic |
+| Directly reachable | Diagnostic |
+| Bluetooth signal strength | Diagnostic |
+| Last successful reading | Diagnostic |
+| Last read error | Diagnostic |
+| Measure now | Diagnostic button |
 
-Das Abfrageintervall kann in den Optionen der Integration zwischen 5 und 120 Minuten eingestellt werden. Die Schaltflache **Jetzt messen** lost eine sofortige GATT-Abfrage aus.
+The polling interval can be set between 5 and 120 minutes in the integration options. **Measure now** triggers an immediate GATT request.
 
-Die Optionen erreichst du nach dem Einrichten in **Einstellungen > Gerate & Dienste > BlueRiiot Bluetooth > Konfigurieren**. Dort lassen sich das Abfrageintervall und bei Salzmodellen der Referenzwert zur Kalibrierung setzen.
+After setup, open **Settings > Devices & services > BlueRiiot Bluetooth > Configure** to change the polling interval or, for salt models, provide a calibration reference value.
 
-Bei BlueRiiot-Modellen mit Salzsensor ist der Standard-Kalibrierfaktor `18`. Fur eine Kalibrierung zuerst eine aktuelle Messung auslosen und dann unter den Integrationsoptionen den Salzgehalt einer verlasslichen Referenzmessung eingeben. Die Integration berechnet den Faktor einmalig aus dem aktuellen Rohwert; mit `0` bleibt er unverandert.
+For BlueRiiot models with a salt sensor, the default calibration divisor is `18`. To calibrate it, trigger a current reading and enter a reliable reference salt concentration in the integration options. The integration derives and stores the divisor from the latest raw value; enter `0` to keep the current calibration.
 
-## Fehlerdiagnose
+## Troubleshooting
 
-Bei Problemen zuerst den Bluetooth-Adapter bzw. Proxy und die Entfernung zum BlueRiiot prufen. `Direkt erreichbar` wird erst nach einer erfolgreichen GATT-Abfrage eingeschaltet. Der Sensor `Letzter Lesefehler` zeigt die Klasse des letzten Bluetooth-Fehlers.
+First check the Bluetooth adapter or proxy and its distance from the BlueRiiot device. `Directly reachable` turns on only after a successful GATT request. The `Last read error` sensor reports the class of the most recent Bluetooth error.
 
-Fur Debug-Logs in `configuration.yaml`:
+Enable debug logging in `configuration.yaml`:
 
 ```yaml
 logger:
@@ -56,14 +58,14 @@ logger:
     custom_components.blueriiot: debug
 ```
 
-Danach Home Assistant neu starten und **BlueRiiot Bluetooth** unter **Integration hinzufugen** offnen. Im Home-Assistant-Log erscheinen erkannte BlueRiiot-Geraete mit Name und Adresse. Die Adresse kann vor dem Teilen eines Logs geschwarzt werden.
+Restart Home Assistant and open **BlueRiiot Bluetooth** from **Add integration**. The Home Assistant log will show discovered BlueRiiot devices with their name and address. Redact the address before sharing logs.
 
-## Entwicklung
+## Development
 
-Die Decoder-Tests kommen ohne Home-Assistant-Installation aus:
+The decoder tests do not require a Home Assistant installation:
 
 ```sh
 python3 -m unittest discover -s tests -v
 ```
 
-Die Integration verwendet ausschliesslich die Home-Assistant-Bluetooth-APIs und die in Home Assistant enthaltenen BLE-Abhangigkeiten.
+The integration only uses Home Assistant Bluetooth APIs and BLE dependencies included with Home Assistant.
