@@ -1,5 +1,9 @@
 # BlueRiiot Bluetooth for Home Assistant
 
+From version 1.0.7, the integration requests address-specific active scan windows through Home Assistant and waits for discovery before connecting when the device is missing from the cache. Set ESPHome proxy scanning to **Auto** or **Active**; explicitly **Passive** scanners are not overridden. No device-specific BLE client is needed on the ESP32.
+
+Pool Controller 2.14.10 adds an optional source for this integration's device entities, including diagnostics and delegated manual readings. Disable Pool Controller's direct reader before configuring BlueRiiot Bluetooth, then select the new source in Pool Controller. Polling and salt calibration are managed here. Do not run two readers against the same device.
+
 [Deutsch](README.de.md)
 
 A fully local Home Assistant integration for BlueRiiot devices. It reads measurements directly over Bluetooth Low Energy (BLE), without cloud access or dependencies on other custom integrations.

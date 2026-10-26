@@ -12,6 +12,10 @@ Eine vollständig lokale Home-Assistant-Integration für BlueRiiot-Geräte. Sie 
 
 Home Assistant wählt automatisch den erreichbaren Adapter oder Proxy. Reine Advertisement-Scanner reichen nicht aus, weil die Integration eine GATT-Verbindung aufbauen muss.
 
+Ab Version 1.0.7 fordert die Integration gerätespezifische aktive Scanfenster über Home Assistant an. Wenn das Gerät noch nicht im Bluetooth-Cache vorhanden ist, wartet sie vor der Verbindung auf ein aktives Advertisement. Bei ESPHome-Proxys den Scanmodus auf **Auto** oder **Aktiv** stellen. Eine explizite Einstellung **Passiv** wird nicht überschrieben. Dadurch ist kein eigener BLE-Client auf dem ESP32 nötig.
+
+Pool Controller ab 2.14.10 kann dieses Gerät als optionale Messwertquelle verwenden. Zuerst dessen direkte BlueRiiot-Auslesung deaktivieren, dann BlueRiiot Bluetooth einrichten und im Pool Controller als Quelle auswählen. Abfrageintervall und Salzkalibrierung werden dann hier verwaltet. Nicht beide Leser gleichzeitig für dasselbe Gerät betreiben.
+
 ## Installation mit HACS
 
 1. In HACS **Integrationen** öffnen.

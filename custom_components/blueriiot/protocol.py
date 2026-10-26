@@ -25,7 +25,23 @@ class BlueRiiotClient:
             self._hass, self._address, connectable=True
         )
         if device is None:
-            raise BlueRiiotDeviceNotFoundError(self._address)
+            # After startup or a long disconnection, AUTO scanners may only
+            # have passive data. Wait for an active advertisement before GATT.
+            try:
+                await bluetooth.async_process_advertisements(
+                    self._hass,
+                    lambda service_info: True,
+                    {"address": self._address, "connectable": True},
+                    bluetooth.BluetoothScanningMode.ACTIVE,
+                    timeout=20,
+                )
+            except TimeoutError as err:
+                raise BlueRiiotDeviceNotFoundError(self._address) from err
+            device = bluetooth.async_ble_device_from_address(
+                self._hass, self._address, connectable=True
+            )
+            if device is None:
+                raise BlueRiiotDeviceNotFoundError(self._address)
 
         notification = self._hass.loop.create_future()
 
