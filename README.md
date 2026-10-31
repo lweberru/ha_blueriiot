@@ -8,6 +8,8 @@ Pool Controller 2.14.10 adds an optional source for this integration's device en
 
 A fully local Home Assistant integration for BlueRiiot devices. It reads measurements directly over Bluetooth Low Energy (BLE), without cloud access or dependencies on other custom integrations.
 
+From version 1.0.8, a failed read triggers up to two retries one minute apart, then polling returns to the configured interval. The last successful measurement is preserved. Connectivity allows two configured poll intervals (at least 30 minutes) plus five minutes of timing reserve. Pool Controller 2.14.12 and later applies the same reserve.
+
 ## Requirements
 
 - A current Home Assistant release with the built-in Bluetooth integration enabled

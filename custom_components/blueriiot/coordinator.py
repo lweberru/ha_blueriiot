@@ -26,6 +26,10 @@ from .protocol import BlueRiiotClient
 
 _LOGGER = logging.getLogger(__name__)
 
+RETRY_INTERVAL = timedelta(minutes=1)
+MAX_FAST_RETRIES = 2
+REACHABILITY_GRACE = timedelta(minutes=5)
+
 
 @dataclass(frozen=True, slots=True)
 class BlueRiiotData:
@@ -35,13 +39,14 @@ class BlueRiiotData:
     last_success: datetime | None
     last_error: str | None
     rssi: int | None
+    maximum_age: timedelta = timedelta(minutes=35)
 
     @property
     def connected(self) -> bool:
         """Return whether a direct GATT read recently succeeded."""
         if self.last_success is None:
             return False
-        return dt_util.utcnow() - self.last_success <= timedelta(minutes=30)
+        return timedelta(0) <= dt_util.utcnow() - self.last_success <= self.maximum_age
 
 
 class BlueRiiotCoordinator(DataUpdateCoordinator[BlueRiiotData]):
@@ -65,6 +70,8 @@ class BlueRiiotCoordinator(DataUpdateCoordinator[BlueRiiotData]):
             name=f"{DOMAIN}_{self.address}",
             update_interval=interval or DEFAULT_UPDATE_INTERVAL_DELTA,
         )
+        self._poll_interval = self.update_interval
+        self._fast_retries = 0
         self._client = BlueRiiotClient(hass, self.address)
         self._last_success: datetime | None = None
         self._last_error: str | None = None
@@ -72,12 +79,12 @@ class BlueRiiotCoordinator(DataUpdateCoordinator[BlueRiiotData]):
 
     @property
     def connected(self) -> bool:
-        """Return whether a direct read succeeded within two poll intervals."""
-        if not self.data or self.data.last_success is None:
-            return False
-        return dt_util.utcnow() - self.data.last_success <= max(
-            self.update_interval * 2, timedelta(minutes=30)
-        )
+        """Return whether a direct read is recent, including timing reserve."""
+        return bool(self.data and self.data.connected)
+
+    @property
+    def _maximum_age(self) -> timedelta:
+        return max(self._poll_interval * 2, timedelta(minutes=30)) + REACHABILITY_GRACE
 
     async def _async_update_data(self) -> BlueRiiotData:
         """Read the device and preserve the prior reading on a transient failure."""
@@ -88,15 +95,24 @@ class BlueRiiotCoordinator(DataUpdateCoordinator[BlueRiiotData]):
         except Exception as err:  # Bluetooth backend errors are platform dependent.
             self._last_error = type(err).__name__
             _LOGGER.debug("Could not read BlueRiiot %s: %s", self.address, err)
+            if self._fast_retries < MAX_FAST_RETRIES:
+                self._fast_retries += 1
+                self.update_interval = min(RETRY_INTERVAL, self._poll_interval)
+            else:
+                self._fast_retries = 0
+                self.update_interval = self._poll_interval
         else:
             self._last_success = dt_util.utcnow()
             self._last_error = None
+            self._fast_retries = 0
+            self.update_interval = self._poll_interval
 
         return BlueRiiotData(
             reading=self._reading,
             last_success=self._last_success,
             last_error=self._last_error,
             rssi=self._rssi(),
+            maximum_age=self._maximum_age,
         )
 
     def _rssi(self) -> int | None:

@@ -16,6 +16,8 @@ Ab Version 1.0.7 fordert die Integration gerätespezifische aktive Scanfenster �
 
 Pool Controller ab 2.14.10 kann dieses Gerät als optionale Messwertquelle verwenden. Zuerst dessen direkte BlueRiiot-Auslesung deaktivieren, dann BlueRiiot Bluetooth einrichten und im Pool Controller als Quelle auswählen. Abfrageintervall und Salzkalibrierung werden dann hier verwaltet. Nicht beide Leser gleichzeitig für dasselbe Gerät betreiben.
 
+Ab Version 1.0.8 folgen nach einem Lesefehler bis zu zwei erneute Versuche im Abstand von einer Minute. Danach gilt wieder das konfigurierte Abfrageintervall. Erfolgreiche Messwerte bleiben erhalten; für „Direkt erreichbar“ gilt eine Altersgrenze von zwei Abfrageintervallen (mindestens 30 Minuten) plus fünf Minuten Zeitreserve. Pool Controller ab 2.14.12 berücksichtigt dieselbe Reserve.
+
 ## Installation mit HACS
 
 1. In HACS **Integrationen** öffnen.
